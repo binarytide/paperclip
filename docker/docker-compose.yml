@@ -1,40 +1,60 @@
 services:
-  db:
-    image: postgres:17-alpine
+  ts-postgres:
+    image: tailscale/tailscale:latest
+    container_name: ts-paperclip
+    hostname: paperclip
     environment:
-      POSTGRES_USER: paperclip
-      POSTGRES_PASSWORD: paperclip
-      POSTGRES_DB: paperclip
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U paperclip -d paperclip"]
-      interval: 2s
-      timeout: 5s
-      retries: 30
-    ports:
-      - "5432:5432"
+      - TS_AUTHKEY=tskey-client-k14mfBxdQ511CNTRL-aNPMzxAWuH7KhJvJHMpiH7iJbB3dXAFUd?ephemeral=false
+      - TS_EXTRA_ARGS=--advertise-tags=tag:container
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - tailscale-paperclip:/var/lib/tailscale
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - net_admin
+    restart: unless-stopped
+  # db:
+  #   image: postgres:17-alpine
+  #   environment:
+  #     POSTGRES_USER: paperclip
+  #     POSTGRES_PASSWORD: paperclip
+  #     POSTGRES_DB: paperclip
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U paperclip -d paperclip"]
+  #     interval: 2s
+  #     timeout: 5s
+  #     retries: 30
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
 
-  server:
+  paperclip:
     build:
       context: ..
       dockerfile: Dockerfile
-    ports:
-      - "3100:3100"
+    container_name: paperclip
+    # ports:
+    #   - "3100:3100"
     environment:
-      DATABASE_URL: postgres://paperclip:paperclip@db:5432/paperclip
-      PORT: "3100"
+      DATABASE_URL": "${DATABASE_URL:-postgresql://paperclip:paperclip@db:5432/paperclip}"
+      PORT: "8080"
       SERVE_UI: "true"
       PAPERCLIP_DEPLOYMENT_MODE: "authenticated"
       PAPERCLIP_DEPLOYMENT_EXPOSURE: "private"
-      PAPERCLIP_PUBLIC_URL: "${PAPERCLIP_PUBLIC_URL:-http://localhost:3100}"
+      PAPERCLIP_PUBLIC_URL: "${PAPERCLIP_PUBLIC_URL:-http://paperclip:8080}"
+      # bun -e "console.log(Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('hex'))"
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set}"
     volumes:
       - paperclip-data:/paperclip
-    depends_on:
-      db:
-        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
 
 volumes:
-  pgdata:
   paperclip-data:
+  tailscale-paperclip:
