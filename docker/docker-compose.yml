@@ -36,8 +36,10 @@ services:
       context: ..
       dockerfile: Dockerfile
     container_name: paperclip
-    ports:
-      - "3100:3100"
+    network_mode: service:ts-paperclip
+    restart: unless-stopped
+    # ports:
+    #   - "3100:3100"
     environment:
       DATABASE_URL": "${DATABASE_URL:-postgresql://paperclip:paperclip@db:5432/paperclip}"
       PORT: "3100"
