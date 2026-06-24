@@ -1,5 +1,5 @@
 services:
-  ts-postgres:
+  ts-paperclip:
     image: tailscale/tailscale:latest
     container_name: ts-paperclip
     hostname: paperclip
