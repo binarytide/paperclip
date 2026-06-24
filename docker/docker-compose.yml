@@ -51,7 +51,7 @@ services:
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set}"
     volumes:
       - paperclip-data:/paperclip
-      - ~/.codex:/root/.codex
+      - /Users/richardmcandrews/.codex:/root/.codex
     logging:
       driver: "json-file"
       options:
