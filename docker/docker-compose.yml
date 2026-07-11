@@ -22,7 +22,7 @@ services:
     container_name: paperclip
     labels:
       docktail.service.enable: "true"
-      docktail.service.name: paperclip-docktail
+      docktail.service.name: paperclip
       docktail.service.description: Paperclip web interface and API
       docktail.service.port: "3100"
     restart: unless-stopped
@@ -34,7 +34,7 @@ services:
       SERVE_UI: "true"
       PAPERCLIP_DEPLOYMENT_MODE: "authenticated"
       PAPERCLIP_DEPLOYMENT_EXPOSURE: "private"
-      PAPERCLIP_PUBLIC_URL: "${PAPERCLIP_PUBLIC_URL:-http://paperclip-docktail}"
+      PAPERCLIP_PUBLIC_URL: "${PAPERCLIP_PUBLIC_URL:-http://paperclip}"
       # bun -e "console.log(Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('hex'))"
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set}"
     volumes:
