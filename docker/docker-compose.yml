@@ -44,10 +44,10 @@ services:
       docktail.service.enable: true
       docktail.service.name: paperclip
       docktail.service.port: "3100"
-    depends_on:
-      db:
-        condition: service_healthy
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
 
 volumes:
-  pgdata:
+  # pgdata:
   paperclip-data:
